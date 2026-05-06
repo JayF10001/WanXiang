@@ -1,0 +1,318 @@
+# ================================
+# Python
+# ================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.ENV/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# ================================
+# Node.js / JavaScript / TypeScript
+# ================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Next.js build output
+.next/
+out/
+
+# Production build
+/build
+/dist
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# ================================
+# 系统文件
+# ================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# ================================
+# 编辑器和IDE
+# ================================
+# VSCode
+.vscode/
+.history/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ================================
+# 数据库和数据文件
+# ================================
+*.sqlite
+*.sqlite3
+*.db
+*.rdb
+
+# MongoDB dumps
+*.bson
+dump/
+
+# Redis dumps
+*.rdb
+
+# ================================
+# Docker
+# ================================
+# Docker compose override files
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# ================================
+# 日志和临时文件
+# ================================
+*.log
+logs/
+tmp/
+temp/
+cache/
+
+# ================================
+# 配置和密钥文件
+# ================================
+# 环境变量文件
+.env*
+!.env.example
+
+# SSL证书
+*.pem
+*.key
+*.crt
+*.cert
+
+# API密钥和配置
+config/local.json
+config/production.json
+secrets.json
+
+# ================================
+# 备份文件
+# ================================
+*.backup
+*.bak
+*.swp
+*.tmp
+*~
+*.orig
+
+# Compressed files
+*.tar.gz
+*.zip
+*.rar
+*.7z
+
+# ================================
+# 项目特定文件
+# ================================
+# 导出的数据文件
+benchmark_audit/
+data_exports/*.csv
+data_exports/*.tar.gz
+
+# 结果文件
+results/
+result.json
+*.result
+
+# 热点新闻缓存
+data/hot_news.json
+
+# 视频文件
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+
+*.pub
+id_rsa
+
+# 本地分析/调试产物（不提交）
+review.md
+setup.md
+vl_upgrade_checklist.md
+
+# MediaCrawler 整个目录（第三方Git仓库）
+MediaCrawler/
+
+# YuQingDemo 整个目录（第三方Git仓库）
+YuQingDemo/
+
+# data_exports 整个目录（第三方Git仓库）
+data_exports/
+
+# 爬取数据目录
+xiaomi_car_data/
+
+# 防止嵌套Git仓库
+**/.git/
+.git/
+*/.git/
+
+# 图片缓存
+public/iloveimg-compressed/
+
+# 测试报告
+tests/reports/
+
+# ================================
+# 大文件和媒体文件
+# ================================
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.wmv
+*.mp3
+*.wav
+*.flac
+
+# ================================
+# 其他
+# ================================
+# 临时文件
+.tmp/
+*.tmp
+
+# 缓存目录
+.cache/
+
+# 性能分析文件
+*.prof
+
+# 文档生成
+docs/_build/

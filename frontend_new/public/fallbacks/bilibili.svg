@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#ffffff"/>
+  <g transform="translate(260 240)" fill="none" stroke="#19a0ea" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 0l42 42"/>
+    <path d="M258 0l-42 42"/>
+    <rect x="0" y="42" width="300" height="230" rx="44"/>
+    <path d="M76 106l64-12"/>
+    <path d="M224 106l-64-12"/>
+    <path d="M117 180c19 23 48 36 77 36 29 0 58-13 77-36"/>
+    <circle cx="72" cy="282" r="12" fill="#19a0ea" stroke="none"/>
+    <circle cx="228" cy="282" r="12" fill="#19a0ea" stroke="none"/>
+  </g>
+  <text x="620" y="485" font-size="170" font-family="Arial, sans-serif" font-weight="700" fill="#19a0ea">bilibili</text>
+</svg>

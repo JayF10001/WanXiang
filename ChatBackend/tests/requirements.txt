@@ -1,0 +1,13 @@
+# 单元测试相关依赖
+pytest==7.4.2
+pytest-cov==4.1.0
+pytest-mock==3.11.1
+freezegun==1.2.2
+html-testRunner==1.2.1
+
+# 模拟相关依赖
+requests-mock==1.11.0
+mongomock==4.1.2
+
+# 调试工具
+ipdb==0.13.13 

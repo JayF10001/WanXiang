@@ -1,0 +1,4 @@
+# B站cookies文件
+# 如果需要下载会员视频或者高清视频，需要将登录后的cookies复制到这里
+# 格式：
+# domain_name	FALSE	path	TRUE	expire_time_in_seconds	name	value 

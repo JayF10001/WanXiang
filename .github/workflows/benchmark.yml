@@ -1,0 +1,49 @@
+name: Benchmark
+
+on:
+  pull_request:
+    paths:
+      - "Makefile"
+      - "scripts/benchmark/**"
+      - "docs/benchmark/**"
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "Makefile"
+      - "scripts/benchmark/**"
+      - "docs/benchmark/**"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install benchmark dependencies
+        run: python -m pip install --upgrade pip jsonschema
+
+      - name: Run sample benchmark pipeline
+        run: make benchmark
+
+      - name: Run benchmark tests
+        run: make benchmark-test
+
+      - name: Build benchmark v1 assets
+        run: make benchmark-v1-build
+
+      - name: Run benchmark v1 release
+        run: make benchmark-v1-release
+
+      - name: Export benchmark v1 public package
+        run: make benchmark-v1-public-export
+
+      - name: Validate benchmark v1 public package
+        run: make benchmark-v1-public-validate

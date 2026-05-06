@@ -1,0 +1,22 @@
+FROM docker.m.daocloud.io/library/node:20-alpine AS frontend_builder
+
+WORKDIR /app/frontend_new
+
+COPY frontend_new/package.json frontend_new/package-lock.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY frontend_new ./
+
+ARG VITE_FRONTEND_API_BASE=/api
+ENV VITE_FRONTEND_API_BASE=${VITE_FRONTEND_API_BASE}
+
+RUN npm run build
+
+FROM docker.m.daocloud.io/library/nginx:alpine
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=frontend_builder /app/frontend_new/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

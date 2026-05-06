@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#ffffff"/>
+  <text x="90" y="470" font-size="190" font-family="Arial, sans-serif" font-weight="700" fill="#ef1a1a">Bai</text>
+  <g transform="translate(365 208)">
+    <ellipse cx="108" cy="172" rx="80" ry="62" fill="#3341db"/>
+    <rect x="56" y="132" width="104" height="84" rx="20" fill="#ffffff"/>
+    <text x="73" y="194" font-size="90" font-family="Arial, sans-serif" font-weight="700" fill="#3341db">du</text>
+    <ellipse cx="42" cy="78" rx="34" ry="48" fill="#3341db"/>
+    <ellipse cx="111" cy="34" rx="38" ry="54" fill="#3341db"/>
+    <ellipse cx="184" cy="34" rx="38" ry="54" fill="#3341db"/>
+    <ellipse cx="254" cy="78" rx="34" ry="48" fill="#3341db"/>
+  </g>
+  <text x="660" y="470" font-size="190" font-family="Arial, sans-serif" font-weight="700" fill="#ef1a1a">百度</text>
+</svg>

@@ -1,0 +1,45 @@
+export const assistantSessionsRawMock = {
+  active_session_id: 'session-001',
+  sessions: [
+    {
+      id: 'session-001',
+      title: '邢台局长打人',
+      updated_at: '2025-02-18T10:10:00Z',
+      created_at: '2025-02-18T09:50:00Z',
+      summary: '任泽经济开发区财政金融局局长杨某酒后闹事事件分析',
+      report_id: 'report-001',
+    },
+    {
+      id: 'session-002',
+      title: '某地突发火灾事故分析',
+      updated_at: '2025-02-17T18:30:00Z',
+      created_at: '2025-02-17T18:00:00Z',
+      summary: '火灾事故传播趋势与风险分析',
+      report_id: null,
+    },
+    {
+      id: 'session-003',
+      title: '新能源汽车政策解读',
+      updated_at: '2025-02-16T08:00:00Z',
+      created_at: '2025-02-16T07:30:00Z',
+      summary: '政策发布后市场舆论走势分析',
+      report_id: null,
+    },
+    {
+      id: 'session-004',
+      title: 'A股市场近期走势预测',
+      updated_at: '2025-02-15T07:00:00Z',
+      created_at: '2025-02-15T06:30:00Z',
+      summary: '市场舆论及投资情绪研判',
+      report_id: null,
+    },
+    {
+      id: 'session-005',
+      title: '国际原油价格波动影响',
+      updated_at: '2025-02-10T12:00:00Z',
+      created_at: '2025-02-10T11:00:00Z',
+      summary: '国际原油价格变化对产业链的舆情影响',
+      report_id: null,
+    },
+  ],
+};

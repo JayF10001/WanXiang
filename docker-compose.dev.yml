@@ -1,0 +1,125 @@
+    # docker-compose.dev.yml - 用于本地开发
+
+    services:
+      frontend:
+        build:
+          context: ./newsweb
+          dockerfile: Dockerfile # 假设此 Dockerfile 运行开发服务器 (例如 pnpm run dev)
+        container_name: newsweb_frontend_dev
+        ports:
+          - "3000:8000" # 映射本地 3000 到容器开发服务器端口 (例如 Umi 的 8000)
+        volumes:
+          - ./newsweb:/app # 挂载本地源代码实现热重载
+          - /app/node_modules # 防止本地 node_modules 覆盖容器内的
+          - frontend-cache:/app/src/.umi # 使用命名卷解决.umi目录权限问题
+          - frontend-node-cache:/app/node_modules/.cache # 使用命名卷解决node_modules/.cache目录权限问题
+        networks:
+          - app-network
+        depends_on:
+          - backend
+        environment:
+          NODE_ENV: development
+          # 其他前端开发所需环境变量
+
+      backend:
+        build:
+          context: ./ChatBackend
+          dockerfile: Dockerfile # 假设此 Dockerfile 运行 Flask 开发服务器 (python run.py)
+        container_name: chat_backend_dev
+        ports:
+          - "5001:5000" # 映射本地 5001 到容器开发服务器端口 5000
+        volumes:
+          - ./ChatBackend:/app # 挂载本地源代码实现热重载
+          - wanxiang-runtime:/data/runtime
+        networks:
+          - app-network
+        depends_on:
+          - db
+          - redis
+        env_file:
+          - .env # 加载本地 .env 文件获取开发用密钥/配置
+        environment:
+          MONGODB_URI: mongodb://db:27017/chatdb # 使用服务名 'db' 连接数据库
+          FLASK_ENV: development
+          FLASK_DEBUG: 1 # 开启 Flask 调试模式
+          CELERY_BROKER_URL: redis://redis:6379/0
+          CELERY_RESULT_BACKEND: redis://redis:6379/1
+          WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+        command: python run.py
+
+      db:
+        image: mongo:latest
+        container_name: mongodb_dev
+        ports:
+          - "27017:27017" # 暴露数据库端口方便本地工具连接 (可选)
+        volumes:
+          - mongo-data:/data/db # 使用命名卷持久化数据
+        networks:
+          - app-network
+
+      redis:
+        image: redis:alpine
+        container_name: redis_dev
+        ports:
+          - "6379:6379"
+        volumes:
+          - redis-data:/data
+        networks:
+          - app-network
+
+      celery_worker:
+        build:
+          context: ./ChatBackend
+          dockerfile: Dockerfile
+        container_name: celery_worker_dev
+        command: bash -c "cd /app && PYTHONPATH=/app celery -A celery_app worker --loglevel=info --concurrency=2"
+        volumes:
+          - ./ChatBackend:/app
+          - wanxiang-runtime:/data/runtime
+        networks:
+          - app-network
+        depends_on:
+          - backend
+          - redis
+          - db
+        env_file:
+          - .env
+        environment:
+          CELERY_BROKER_URL: redis://redis:6379/0
+          CELERY_RESULT_BACKEND: redis://redis:6379/1
+          MONGODB_URI: mongodb://db:27017/chatdb
+          WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+
+      celery_beat:
+        build:
+          context: ./ChatBackend
+          dockerfile: Dockerfile
+        container_name: celery_beat_dev
+        command: bash -c "cd /app && PYTHONPATH=/app celery -A celery_app beat --loglevel=info"
+        volumes:
+          - ./ChatBackend:/app
+          - wanxiang-runtime:/data/runtime
+        networks:
+          - app-network
+        depends_on:
+          - backend
+          - redis
+          - db
+        env_file:
+          - .env
+        environment:
+          CELERY_BROKER_URL: redis://redis:6379/0
+          CELERY_RESULT_BACKEND: redis://redis:6379/1
+          MONGODB_URI: mongodb://db:27017/chatdb
+          WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+
+    networks:
+      app-network:
+        driver: bridge
+
+    volumes:
+      mongo-data:
+      frontend-cache:
+      frontend-node-cache:
+      redis-data:
+      wanxiang-runtime:

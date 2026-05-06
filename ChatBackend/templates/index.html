@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot News Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .news-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>今日热榜分析</h1>
+    <div id="news-container"></div>
+
+    <script>
+        // 从 Flask 后端获取新闻数据
+        axios.get('/api/news')
+            .then(response => {
+                const newsData = response.data;
+                const newsContainer = document.getElementById('news-container');
+
+                // 检查是否有错误
+                if (newsData.error) {
+                    newsContainer.innerHTML = `<p style="color: red;">${newsData.error}</p>`;
+                    return;
+                }
+
+                // 遍历新闻数据并渲染到页面
+                for (const platform in newsData) {
+                    const platformHeader = document.createElement('h2');
+                    platformHeader.textContent = `平台: ${platform}`;
+                    newsContainer.appendChild(platformHeader);
+                    
+                    newsData[platform].forEach(news => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'news-item';
+
+                        const analysis = news.analysis;
+                        newsItem.innerHTML = `
+                            <h2>${news.title}</h2>
+                            ${analysis.error ? `<p style="color: red;">${analysis.error}</p>` : `
+                                <p><strong>传播速度:</strong> ${analysis.spreadSpeed}</p>
+                                <p><strong>传播范围:</strong> ${analysis.spreadRange}</p>
+                                <p><strong>参与人数:</strong> ${analysis.participants}</p>
+                                <p><strong>情感指数:</strong> ${analysis.emotion}</p>
+                                <p><strong>热度趋势:</strong></p>
+                                <ul>
+                                    ${analysis.heatTrend.map(trend => `
+                                        <li>${trend.date}: ${trend.value}</li>
+                                    `).join('')}
+                                </ul>
+                                <p><strong>时间线:</strong></p>
+                                <ul>
+                                    ${analysis.timeline.map(event => `
+                                        <li>${event.date}: ${event.event}</li>
+                                    `).join('')}
+                                </ul>
+                            `}
+                        `;
+
+                        newsContainer.appendChild(newsItem);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching news data:', error);
+                document.getElementById('news-container').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>

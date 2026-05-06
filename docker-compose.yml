@@ -1,0 +1,102 @@
+services:
+  frontend:
+    build:
+      context: ./newsweb
+      dockerfile: Dockerfile
+    container_name: newsweb_frontend_dev
+    ports:
+      - "3000:8000" # Map host 3000 to container 8000 (UMI default)
+    volumes:
+      - ./newsweb:/app
+      # Use a more specific volume for node_modules if needed to avoid overwriting
+      - /app/node_modules 
+    networks:
+      - app-network
+    depends_on:
+      - backend
+    # Add command based on how you start the dev server, e.g., CMD ["pnpm", "run", "dev"] in Dockerfile
+
+  backend:
+    build:
+      context: ./ChatBackend
+      dockerfile: Dockerfile
+    container_name: chat_backend_dev
+    ports:
+      - "5001:5000" # Map host 5001 to container 5000 (default Flask port), adjust if needed
+    volumes:
+      - ./ChatBackend:/app
+      - wanxiang-runtime:/data/runtime
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - redis
+    environment:
+      MONGODB_URI: mongodb://db:27017/chatdb # Correct URI for backend<->db communication
+      FLASK_ENV: development # Or production
+      FLASK_DEBUG: "1"       # Explicitly enable Debug Mode for logging
+      PYTHONDONTWRITEBYTECODE: "1"  # 不生成pyc文件
+      PYTHONUNBUFFERED: "1"        # 输出直接显示到控制台，不缓存
+      WERKZEUG_DEBUG_PIN: "off"    # 禁用werkzeug调试器PIN
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+      # Add any other necessary environment variables from your .env file
+      # Example: SECRET_KEY: your_secret_key
+      SECRET_KEY: ${SECRET_KEY:-616d6f417411a6c6c54e5e561ae52a11c4caccd8f8952e50} # Example using host env or default
+    # 替换默认的 gunicorn 命令，使用 Flask 内置的开发服务器以支持更好的调试
+    command: ["python", "wsgi.py"]
+
+  celery_worker:
+    build:
+      context: ./ChatBackend
+      dockerfile: Dockerfile
+    container_name: celery_worker_dev
+    volumes:
+      - ./ChatBackend:/app
+      - wanxiang-runtime:/data/runtime
+    networks:
+      - app-network
+    depends_on:
+      - redis
+      - db
+    environment:
+      MONGODB_URI: mongodb://db:27017/chatdb
+      FLASK_ENV: development
+      FLASK_DEBUG: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+      SECRET_KEY: ${SECRET_KEY:-616d6f417411a6c6c54e5e561ae52a11c4caccd8f8952e50}
+    command: ["celery", "-A", "celery_app", "worker", "--loglevel=info"]
+
+  db:
+    image: mongo:latest
+    container_name: mongodb_dev
+    ports:
+      - "27017:27017" # Expose MongoDB port to host if needed for direct access
+    volumes:
+      - mongo-data:/data/db # Persist database data
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data: # Define the named volume for MongoDB data 
+  redis-data: # Define the named volume for Redis data
+  wanxiang-runtime:

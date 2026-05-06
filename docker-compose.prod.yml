@@ -1,0 +1,197 @@
+# docker-compose.prod.yml - 用于服务器生产部署
+
+services:
+  nginx:
+    image: wanxiang-nginx:latest
+    build:
+      context: .
+      dockerfile: frontend_new/Dockerfile.prod
+      args:
+        VITE_FRONTEND_API_BASE: /api
+    container_name: nginx_prod
+    ports:
+      - "80:80"
+      # - "443:443"
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend_api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -q '^ok$'"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  backend:
+    image: wanxiang-backend:latest
+    build:
+      context: .
+      dockerfile: ChatBackend/Dockerfile
+    container_name: chat_backend_prod
+    command: gunicorn --bind 0.0.0.0:5000 -w 1 --threads 4 --timeout 180 wsgi:app
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      MONGODB_URI: mongodb://db:27017/chatdb
+      FLASK_ENV: production
+      FLASK_DEBUG: 0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - wanxiang-runtime:/data/runtime
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import json,urllib.request; data=json.load(urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=5)); raise SystemExit(0 if data.get('success') else 1)\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  frontend_api:
+    image: wanxiang-frontend_api:latest
+    build:
+      context: .
+      dockerfile: frontend_api/Dockerfile
+    container_name: frontend_api_prod
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      CHATBACKEND_BASE_URL: http://backend:5000
+      MONGODB_URI: mongodb://db:27017/chatdb
+      FLASK_ENV: production
+      FLASK_DEBUG: 0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      FRONTEND_API_REDIS_URL: redis://redis:6379/0
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+    volumes:
+      - wanxiang-runtime:/data/runtime
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import json,urllib.request; data=json.load(urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)); raise SystemExit(0 if data.get('success') else 1)\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  db:
+    image: docker.m.daocloud.io/library/mongo:latest
+    container_name: mongodb_prod
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" | grep -q 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 120s
+    restart: unless-stopped
+
+  redis:
+    image: docker.m.daocloud.io/library/redis:alpine
+    container_name: redis_prod
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  celeryworker:
+    image: wanxiang-backend:latest
+    container_name: celery_worker_prod
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+      MONGODB_URI: mongodb://db:27017/chatdb
+      FLASK_ENV: production
+      FLASK_DEBUG: 0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - wanxiang-runtime:/data/runtime
+    command: celery -A celery_app worker --loglevel=info
+
+  celerybeat:
+    image: wanxiang-backend:latest
+    container_name: celery_beat_prod
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+      MONGODB_URI: mongodb://db:27017/chatdb
+      FLASK_ENV: production
+      FLASK_DEBUG: 0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      WANXIANG_RUNTIME_STORAGE_ROOT: /data/runtime
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - wanxiang-runtime:/data/runtime
+    command: celery -A celery_app beat --loglevel=info -s /tmp/celerybeat-schedule
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  redis_data:
+  wanxiang-runtime:

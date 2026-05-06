@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#ffffff"/>
+  <circle cx="365" cy="414" r="160" fill="#f40215"/>
+  <ellipse cx="415" cy="414" rx="142" ry="92" fill="#ffffff"/>
+  <circle cx="380" cy="430" r="48" fill="#2c1d19"/>
+  <circle cx="436" cy="398" r="18" fill="#ffffff"/>
+  <circle cx="337" cy="446" r="28" fill="#ffffff"/>
+  <path d="M494 230c62 8 113 52 132 112" fill="none" stroke="#f6a100" stroke-width="28" stroke-linecap="round"/>
+  <path d="M521 290c30 4 55 25 64 53" fill="none" stroke="#f6a100" stroke-width="22" stroke-linecap="round"/>
+  <text x="580" y="495" font-size="170" font-family="Arial, sans-serif" font-weight="700" fill="#111111">微博</text>
+</svg>
